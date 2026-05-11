@@ -14,7 +14,7 @@ with st.sidebar:
     if api_key:
         pg.completer = OpenAI(
             model="openai/gpt-4.1-nano",
-            base_url="https://models.github.ai/inference",
+            base_url="https://api.openai.com/v1",
             api_key=api_key
         )
         st.success("✅ API configured!")
@@ -40,7 +40,7 @@ if url:
             st.metric("Missing Values", df.isnull().sum().sum())
         
         with st.expander("📋 Data Preview", expanded=True):
-            st.dataframe(df.head(10), use_container_width=True)
+            st.dataframe(df.head(10), width='stretch')  # ← FIXED
         
         st.markdown("---")
         st.subheader("🤖 Ask Questions")
@@ -51,7 +51,7 @@ if url:
             height=80
         )
         
-        if question:  # ← ONLY runs if question is NOT empty
+        if question:
             with st.spinner("🔄 Analyzing..."):
                 try:
                     result = df.ask(question)
