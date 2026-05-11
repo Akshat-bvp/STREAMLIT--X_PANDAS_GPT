@@ -1,5 +1,5 @@
 import streamlit as st 
-import pandas_gpt 
+import pandas_gpt as pg
 from pandas_gpt.completers.openai import OpenAI
 import pandas as pd
 
