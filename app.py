@@ -8,7 +8,7 @@ st.title('PANDAS_GPT INTEGRATED TYPE PROMPTS AND GENERATE RESULTS IN FORMS OF ED
 pg.completer = OpenAI(
     model="openai/gpt-4.1-nano",
     base_url="https://models.github.ai/inference",
-    api_key="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"
+    api_key="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"
 )
 
 url = st.text_input('Enter the github link here of the csv', placeholder='https://raw.githubusercontent.com/username/repo/main/data.csv', help='Paste the raw GitHub link to your CSV file here')
