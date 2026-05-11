@@ -14,7 +14,7 @@ with st.sidebar:
     if api_key:
         pg.completer = OpenAI(
             model="openai/gpt-4.1-nano",
-            base_url="https://api.openai.com/v1",
+            base_url="https://models.github.ai/inference",
             api_key=api_key
         )
         st.success("✅ API configured!")
