@@ -6,10 +6,12 @@ import pandas as pd
 st.set_page_config(page_title="PandasGPT Explorer", layout="wide")
 st.title('🔍 PANDAS_GPT DATA EXPLORER')
 
-# Configure API in sidebar
-with st.sidebar:
-    st.header("⚙️ Configuration")
-    api_key = st.text_input("API Key", type="password", placeholder="sk-...")
+# Configure API from GitHub AI Models
+try:
+    api_key = st.secrets.get("GITHUB_AI_API_KEY", "")
+    
+    if not api_key:
+        api_key = st.text_input("Enter GitHub AI API Key", type="password", placeholder="Your GitHub token")
     
     if api_key:
         pg.completer = OpenAI(
@@ -17,9 +19,14 @@ with st.sidebar:
             base_url="https://models.github.ai/inference",
             api_key=api_key
         )
-        st.success("✅ API configured!")
+        st.success("✅ GitHub AI configured!")
     else:
-        st.warning("⚠️ Please enter your API Key")
+        st.warning("⚠️ Please enter your GitHub AI API Key")
+        st.stop()
+
+except Exception as e:
+    st.error(f"❌ Configuration error: {str(e)}")
+    st.stop()
 
 # Main content
 url = st.text_input(
@@ -40,14 +47,20 @@ if url:
             st.metric("Missing Values", df.isnull().sum().sum())
         
         with st.expander("📋 Data Preview", expanded=True):
-            st.dataframe(df.head(10), width='stretch')  # ← FIXED
+            st.dataframe(df.head(10), width='stretch')
+        
+        with st.expander("📊 Data Info"):
+            st.write("**Data Types:**")
+            st.write(df.dtypes)
+            st.write("**Statistical Summary:**")
+            st.write(df.describe())
         
         st.markdown("---")
-        st.subheader("🤖 Ask Questions")
+        st.subheader("🤖 Ask Questions About Your Data")
         
         question = st.text_area(
             'Enter your question',
-            placeholder='e.g., "Create plotly styled visualisations"',
+            placeholder='e.g., "Create plotly styled visualisations" or "Show me the top 5 rows"',
             height=80
         )
         
@@ -55,8 +68,19 @@ if url:
             with st.spinner("🔄 Analyzing..."):
                 try:
                     result = df.ask(question)
-                    st.success("✅ Complete!")
+                    st.success("✅ Analysis Complete!")
+                    st.markdown("### Result:")
                     st.write(result)
+                    
+                    # If result is a dataframe, allow download
+                    if isinstance(result, pd.DataFrame):
+                        csv = result.to_csv(index=False)
+                        st.download_button(
+                            label="📥 Download Result as CSV",
+                            data=csv,
+                            file_name="analysis_result.csv",
+                            mime="text/csv"
+                        )
                 except Exception as e:
                     st.error(f"❌ Error: {str(e)}")
         
